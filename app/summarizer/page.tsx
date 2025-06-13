@@ -15,8 +15,43 @@ type PlotHook = {
   description: string;
 };
 
+type SummaryResult = {
+  summary: string;
+  location: string;
+  characters_met: string;
+  plot_threads: string;
+};
 
-function formatAdventureNote(note: any): string {
+
+type AdventureNote = {
+  name: string;
+  summary: string;
+  synopsis: string;
+  adventure_hooks?: string[];
+  key_locations?: string[];
+  village_info?: {
+    location?: string;
+    mood?: string;
+    current_events?: string;
+    people?: string[];
+  };
+  encounters?: {
+    name: string;
+    type: string;
+    difficulty: string;
+  }[];
+  aftermath: string;
+  rumors?: string;
+};
+type Encounter = {
+  name: string;
+  type: string;
+  difficulty: string;
+};
+
+
+
+function formatAdventureNote(note: AdventureNote): string {
   return `
     # ${note.name}
 
@@ -41,7 +76,7 @@ function formatAdventureNote(note: any): string {
     ${note.village_info?.people?.map((p: string) => `- ${p}`).join('\n')}
 
     ## Encounters
-    ${note.encounters?.map((enc: any) => `- **${enc.name}** (${enc.type}, Difficulty: ${enc.difficulty})`).join('\n')}
+    ${note.encounters?.map((enc: Encounter) => `- **${enc.name}** (${enc.type}, Difficulty: ${enc.difficulty})`).join('\n')}
 
     ## Aftermath
     ${note.aftermath}
@@ -54,7 +89,7 @@ function formatAdventureNote(note: any): string {
 export default function SummarizerPage() {
   const [transcript, setTranscript] = useState('');
   const [useMini, setUseMini] = useState(true);
-  const [summaryResult, setSummaryResult] = useState<any | null>(null);
+  const [summaryResult, setSummaryResult] = useState<SummaryResult | null>(null);
   const [summaryId, setSummaryId] = useState<string | null>(null);
   const [hooks, setHooks] = useState<PlotHook[]>([]);
   const [loading, setLoading] = useState(false);
@@ -105,11 +140,15 @@ export default function SummarizerPage() {
       if (insertErr || !insertData) throw new Error('❌ Could not save session summary');
       setSummaryId(insertData.id);
 
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err: unknown) {
+  if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError('An unknown error occurred.');
+  }
+} finally {
+  setLoading(false);
+}
   };
 
   const handleGenerateHooks = async () => {
@@ -126,12 +165,15 @@ export default function SummarizerPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate hooks');
       setHooks(data.hooks);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setGeneratingHooks(false);
-    }
-  };
+    } catch (err: unknown) {
+  if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError('An unknown error occurred.');
+  }
+} finally {
+  setGeneratingHooks(false);
+};
 
   const handleGenerateNotes = async (hookId: string) => {
     setGeneratingNotes(true);
@@ -159,12 +201,15 @@ export default function SummarizerPage() {
       // ✅ THIS is the line you want — generate the full copyable string:
       setAdventureNotes(formatAdventureNote(notesData));
 
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setGeneratingNotes(false);
-    }
-  };
+    } catch (err: unknown) {
+  if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError('An unknown error occurred.');
+  }
+} finally {
+  setGeneratingNotes(false);
+};
 
 
 

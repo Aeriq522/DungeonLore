@@ -57,9 +57,13 @@ export default function NextSessionHooks() {
       if (!res.ok) throw new Error(data.error || 'Failed to generate hooks');
 
       setHooks(data.hooks);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
+    } catch (err: unknown) {
+  if (err instanceof Error) {
+    setError(err.message);
+  } else {
+    setError('An unknown error occurred');
+  }
+} finally {
       setLoading(false);
     }
   };
@@ -76,12 +80,18 @@ export default function NextSessionHooks() {
       if (!res.ok) throw new Error(data.error || 'Failed to generate notes');
 
       alert('✅ Adventure notes generated!');
-    } catch (err: any) {
-      console.error('❌ Error generating notes:', err);
-      alert('Failed to generate notes: ' + err.message);
-    } finally {
-      setGeneratingNotesFor(null);
-    }
+    } catch (err: unknown) {
+  console.error('❌ Error generating notes:', err);
+
+  if (err instanceof Error) {
+    alert('Failed to generate notes: ' + err.message);
+  } else {
+    alert('Failed to generate notes: Unknown error');
+  }
+} finally {
+  setGeneratingNotesFor(null);
+}
+
   };
 
   return (
