@@ -1,12 +1,19 @@
 'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function SessionDetails({ session }) {
+interface Session {
+  id: string;
+  session_date: string;
+  summary: string;
+}
+
+export default function SessionDetails({ session }: { session: Session }) {
   const router = useRouter();
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState(session);
+  const [formData, setFormData] = useState<Session>(session);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this session?')) return;
@@ -15,13 +22,17 @@ export default function SessionDetails({ session }) {
   };
 
   const handleUpdate = async () => {
+    setSaving(true);
     await fetch(`/api/sessions/${session.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     });
+    setSaving(false);
     setEditMode(false);
+    setSaved(true);
     router.refresh();
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -30,16 +41,19 @@ export default function SessionDetails({ session }) {
         <div>
           <textarea
             value={formData.summary}
-            onChange={(e) =>
-              setFormData({ ...formData, summary: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
             className="w-full h-32 border"
           />
-          <button onClick={handleUpdate} className="btn btn-primary">Save</button>
+          <button onClick={handleUpdate} disabled={saving} className="btn btn-primary">
+            {saving ? 'Saving...' : 'Save'}
+          </button>
+          {saved && <p className="mt-2 text-green-600">Saved!</p>}
         </div>
       ) : (
         <div>
-          <h1 className="text-xl font-bold">{session.session_date}</h1>
+          <h1 className="text-xl font-bold">
+            {new Date(session.session_date).toLocaleDateString()}
+          </h1>
           <p>{session.summary}</p>
         </div>
       )}
