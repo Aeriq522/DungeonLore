@@ -1,13 +1,10 @@
-// app/sessions/[id]/page.tsx
 import SessionDetails from '../../../components/SessionDetails';
 
-type PageProps = {
-  params: {
-    id: string;
-  };
-};
-
-export default async function Page({ params }: PageProps) {
+export default async function Page({
+  params,
+}: {
+  params: { id: string };
+}) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sessions/${params.id}`, {
     cache: 'no-store',
   });
