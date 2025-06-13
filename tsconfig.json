@@ -29,7 +29,7 @@
     ".next/types/**/*.ts",
     "components/sessions/route.js",
     "app/api/summarize/route.js",
-    "app/api/hooks/next-session/route.js"
+    "app/api/hooks/next-session/route.ts"
   ],
   "exclude": ["node_modules"]
 }
