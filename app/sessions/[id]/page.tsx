@@ -1,27 +1,23 @@
-import { Metadata } from 'next';
+// app/sessions/[id]/page.tsx
 import SessionDetails from '../../../components/SessionDetails';
+import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Session Details',
   description: 'View your session summary and notes',
 };
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
+type Params = { id: string };
 
-export default async function Page({ params }: PageProps) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sessions/${params.id}`, {
-    cache: 'no-store',
-  });
+export default async function Page({ params }: { params: Promise<Params> }) {
+  const { id } = await params;
 
-  if (!res.ok) {
-    throw new Error('Failed to load session');
-  }
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/sessions/${id}`,
+    { cache: 'no-store' }
+  );
+  if (!res.ok) throw new Error('Failed to load session');
 
   const session = await res.json();
-
   return <SessionDetails session={session} />;
 }
