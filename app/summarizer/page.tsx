@@ -173,7 +173,8 @@ export default function SummarizerPage() {
   }
 } finally {
   setGeneratingHooks(false);
-};
+}
+  };
 
   const handleGenerateNotes = async (hookId: string) => {
     setGeneratingNotes(true);
@@ -187,7 +188,6 @@ export default function SummarizerPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to generate notes');
 
-      // Fetch the newly inserted notes
       const { data: notesData, error: fetchError } = await supabase
         .from('adventure_notes')
         .select('*')
@@ -198,18 +198,18 @@ export default function SummarizerPage() {
         throw new Error('Failed to retrieve saved adventure notes');
       }
 
-      // ✅ THIS is the line you want — generate the full copyable string:
       setAdventureNotes(formatAdventureNote(notesData));
-
     } catch (err: unknown) {
-  if (err instanceof Error) {
-    setError(err.message);
-  } else {
-    setError('An unknown error occurred.');
-  }
-} finally {
-  setGeneratingNotes(false);
-};
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred.');
+      }
+    } finally {
+      setGeneratingNotes(false);
+    }
+  }; // ✅ this closes the function properly
+
 
 
 
