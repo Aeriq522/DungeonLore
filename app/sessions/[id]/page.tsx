@@ -1,19 +1,31 @@
 import SessionDetails from '../../../components/SessionDetails';
 
-export default async function Page({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sessions/${params.id}`, {
+type PageProps = {
+  params: {
+    id: string;
+  };
+};
+
+async function getSession(id: string) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sessions/${id}`, {
     cache: 'no-store',
   });
 
   if (!res.ok) {
-    return <div className="p-4 text-red-500">Failed to load session.</div>;
+    throw new Error('Failed to fetch session');
   }
 
-  const session = await res.json();
+  return res.json();
+}
 
+export default function Page({ params }: PageProps) {
+  // This function is now sync, and uses a React Suspense boundary or wrapper
+  return (
+    <SessionLoader id={params.id} />
+  );
+}
+
+async function SessionLoader({ id }: { id: string }) {
+  const session = await getSession(id);
   return <SessionDetails session={session} />;
 }
