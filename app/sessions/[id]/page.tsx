@@ -1,12 +1,24 @@
+import { Metadata } from 'next';
 import SessionDetails from '../../../components/SessionDetails';
 
-export default async function Page({ params }: { params: { id: string } }) {
+// Optional metadata export
+export const metadata: Metadata = {
+  title: 'Session Details',
+  description: 'View your session summary and notes',
+};
+
+type Props = {
+  params: {
+    id: string;
+  };
+};
+
+export default async function Page({ params }: Props) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sessions/${params.id}`, {
     cache: 'no-store',
   });
 
   if (!res.ok) {
-    // This won't render as expected in an async function, consider using a fallback component
     throw new Error('Failed to load session');
   }
 
