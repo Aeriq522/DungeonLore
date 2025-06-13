@@ -1,19 +1,18 @@
 import { Metadata } from 'next';
 import SessionDetails from '../../../components/SessionDetails';
 
-// Optional metadata export
 export const metadata: Metadata = {
   title: 'Session Details',
   description: 'View your session summary and notes',
 };
 
-type Props = {
+interface PageProps {
   params: {
     id: string;
   };
-};
+}
 
-export default async function Page({ params }: Props) {
+export default async function Page({ params }: PageProps) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/sessions/${params.id}`, {
     cache: 'no-store',
   });
