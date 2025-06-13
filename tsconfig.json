@@ -22,6 +22,14 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "components/sessions/route.js",
+    "app/api/summarize/route.js",
+    "app/api/hooks/next-session/route.js"
+  ],
   "exclude": ["node_modules"]
 }
