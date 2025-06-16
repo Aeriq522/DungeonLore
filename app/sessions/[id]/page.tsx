@@ -6,18 +6,17 @@ export const metadata: Metadata = {
   description: 'View your session summary and notes',
 };
 
-export default async function Page({
-  params,
-}: {
-  params: { id: string };
-}) {
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export default async function Page({ params }: Props) {
+  const { id } = await params;
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/sessions/${params.id}`,
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/sessions/${id}`,
     { cache: 'no-store' }
   );
-  
   if (!res.ok) throw new Error('Failed to load session');
-
   const session = await res.json();
   return <SessionDetails session={session} />;
 }

@@ -1,16 +1,23 @@
-// app/sessions/page.jsx
 'use client';
+
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+type SessionItem = {
+  id: string;
+  session_date: string;
+  location: string;
+  summary: string;
+};
+
 export default function SessionsPage() {
-  const [sessions, setSessions] = useState([]);
+  const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch('/api/sessions')
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: SessionItem[]) => {
         setSessions(data);
         setLoading(false);
       })
@@ -30,7 +37,10 @@ export default function SessionsPage() {
       ) : (
         <ul className="space-y-4">
           {sessions.map((session) => (
-            <li key={session.id} className="border rounded-lg p-4 hover:bg-gray-50 transition">
+            <li
+              key={session.id}
+              className="border rounded-lg p-4 hover:bg-gray-50 transition"
+            >
               <Link href={`/sessions/${session.id}`}>
                 <div className="cursor-pointer">
                   <h2 className="text-xl font-semibold">
