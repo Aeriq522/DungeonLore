@@ -2,6 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 import { v4 as uuidv4 } from 'uuid';
+import type { NextRequest } from 'next/server';
 
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
   throw new Error('Missing Supabase environment variables');
@@ -14,7 +15,7 @@ const supabase = createClient(
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   const { session_id } = await request.json();
 
   if (!session_id) {
