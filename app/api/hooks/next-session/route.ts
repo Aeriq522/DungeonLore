@@ -81,6 +81,11 @@ export async function POST(request: NextRequest) {
     const end = raw.lastIndexOf(']');
     const jsonBlock = raw.slice(start, end + 1);
 
+    type Hook = {
+      title: string;
+      description: string;
+    };
+
     let hooks;
     try {
       hooks = JSON.parse(jsonBlock);
@@ -89,7 +94,7 @@ export async function POST(request: NextRequest) {
       return new Response(JSON.stringify({ error: 'GPT returned invalid JSON' }), { status: 500 });
     }
 
-    const entries = hooks.map(hook => ({
+    const entries = hooks.map((hook: Hook) => ({
       id: uuidv4(),
       session_id: session_id,
       title: hook.title,
